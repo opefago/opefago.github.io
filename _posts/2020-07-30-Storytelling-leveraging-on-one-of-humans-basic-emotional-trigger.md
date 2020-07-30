@@ -8,7 +8,7 @@ categories: [opinion]
 cover: ''
 share: true
 comments: true
-image: /mike-erskine-S_VbdMTsdiA-unsplash.jpg
+image: mike-erskine-S_VbdMTsdiA-unsplash.jpg
 
 ---
 
