@@ -1,7 +1,7 @@
 # Site settings
 title: Damilola Fagoyinbo Opeyemi
 description: 'Design.Create.Iterate'
-url: 'http://opefago.com'
+url: ''
 baseurl: 'http://opefago.com'
 google_analytics: 'UA-156599109-1'
 disqus_shortname: 'opefago'
