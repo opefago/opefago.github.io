@@ -35,6 +35,8 @@
   <meta property="og:description" content="{% if page.excerpt %}{{ page.excerpt | strip_html }}{% else %}{{ site.description }}{% endif %}">
   {% if page.image %}
     <meta content="{{ site.url }}/images/{{ page.image }}" property="og:image">
+    <meta content="1200" property="og:image:width">
+    <meta content="630" property="og:image:height">
   {% else %}
     <meta property="og:image" content="{{ site.url }}/images/favicons/favicon-194x194.png" />
   {% endif %}
