@@ -8,12 +8,12 @@ categories: [opinion, religion]
 cover: ''
 share: true
 comments: true
-image: europeana-0GuL_hVwQHA-unsplash.jpg
+image: birmingham-museums-trust-5EUh-tq31eA-unsplash.jpg
 
 
 ---
 
-![](/images/europeana-0GuL_hVwQHA-unsplash.jpg)
+![](/images/birmingham-museums-trust-5EUh-tq31eA-unsplash.jpg)
 
 In 550 B.C., Cyrus, king of Anshan, founded the Achaemenid Empire, he reigned from 550 B.C to 530 B.C. The Achaemenid Empire was the largest empire by the percentage of the world’s population in history. About 44% of the world’s population lived under its rule. It was also the most diverse and pluralistic empire in the world at the time, unifying different nations, tribes, languages, cultures and religions. Tolerance of varying beliefs was one of its most defining characteristics.
 
