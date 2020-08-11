@@ -3,6 +3,21 @@
   
     
     <url>
+      <loc>http://localhost:4000/2020/Is-religious-intolerance-an-Abrahamic-construct/</loc>
+      
+        <lastmod>2020-08-11T23:29:52+03:00</lastmod>
+      
+      
+        <changefreq>monthly</changefreq>
+      
+      
+        <priority>0.5</priority>
+      
+    </url>
+    
+  
+    
+    <url>
       <loc>http://localhost:4000/2020/Storytelling-leveraging-on-one-of-humans-basic-emotional-trigger/</loc>
       
         <lastmod>2020-07-30T08:29:52+03:00</lastmod>
@@ -38,7 +53,7 @@
     <url>
       <loc>http://localhost:4000/feed.xml</loc>
       
-        <lastmod>2020-07-30T09:02:42+03:00</lastmod>
+        <lastmod>2020-08-12T00:24:11+03:00</lastmod>
       
       
         <changefreq>monthly</changefreq>
@@ -53,7 +68,7 @@
     <url>
       <loc>http://localhost:4000/humans.txt</loc>
       
-        <lastmod>2020-07-30T09:02:42+03:00</lastmod>
+        <lastmod>2020-08-12T00:24:11+03:00</lastmod>
       
       
         <changefreq>monthly</changefreq>
@@ -72,7 +87,7 @@
     <url>
       <loc>http://localhost:4000/css/main.css</loc>
       
-        <lastmod>2020-07-30T09:02:42+03:00</lastmod>
+        <lastmod>2020-08-12T00:24:11+03:00</lastmod>
       
       
         <changefreq>monthly</changefreq>
@@ -91,7 +106,7 @@
     <url>
       <loc>http://localhost:4000/assets/css/style.css</loc>
       
-        <lastmod>2020-07-30T09:02:42+03:00</lastmod>
+        <lastmod>2020-08-12T00:24:11+03:00</lastmod>
       
       
         <changefreq>monthly</changefreq>
