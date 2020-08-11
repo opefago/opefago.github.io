@@ -15,6 +15,8 @@ image: birmingham-museums-trust-5EUh-tq31eA-unsplash.jpg
 
 ![](/images/birmingham-museums-trust-5EUh-tq31eA-unsplash.jpg)
 
+Photo by [Birmingham Museums Trust](https://unsplash.com/@birminghammuseumstrust?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText) on [Unsplash](https://unsplash.com/?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
+
 In 550 B.C., Cyrus, king of Anshan, founded the Achaemenid Empire, he reigned from 550 B.C to 530 B.C. The Achaemenid Empire was the largest empire by the percentage of the world’s population in history. About 44% of the world’s population lived under its rule. It was also the most diverse and pluralistic empire in the world at the time, unifying different nations, tribes, languages, cultures and religions. Tolerance of varying beliefs was one of its most defining characteristics.
 
 At the height of the Roman empire, it had a conquered so many civilisations, in order to be able to control that vast empire, it needed complete cooperation from its conquered nations, it usually treated them as allies and encouraged them to participate in the glory and wealth of its empire. To all its subjects, Rome granted religious toleration with one condition attached, they must also recognize the roman deities, herein is where they had problems with the Jews, the Jews would not accept any deity outside of Yahweh. Notwithstanding, Judaism still had the status of a legal religion in the Roman Empire with formal protections. Like the Romans, almost all the conquered empires were polytheistic. Since they believed other people had their own gods, they found it relatively easy to take part in festivals celebrating Roman gods. It was simply a matter of paying respect to the Romans. 
