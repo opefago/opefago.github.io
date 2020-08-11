@@ -1,9 +1,10 @@
 # Site settings
 title: Damilola Fagoyinbo Opeyemi
 description: 'Design.Create.Iterate'
-url: ''
+url: 'http://opefago.com'
 baseurl: 'http://opefago.com'
 google_analytics: 'UA-156599109-1'
+facebook_id: '2756079061341516'
 disqus_shortname: 'opefago'
 sumo-site-id: ec165ba54c364e34ccd3bad52ee15054c36d93454bdc6b8b1015f4f22ae85f24
 sumo: ec165ba54c364e34ccd3bad52ee15054c36d93454bdc6b8b1015f4f22ae85f24
