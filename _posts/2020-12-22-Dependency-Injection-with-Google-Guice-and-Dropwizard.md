@@ -2,10 +2,12 @@
 layout : post
 title: 'Dependency Injection with Google Guice and Dropwizard'
 date: '2020-12-22 07:18:33'
-tags: dropwizard, dependency Injection, guice, guicey
+tags: [dropwizard, dependency Injection, guice, guicey]
 subclass: 'post tag-dropwizard, dependency Injection, guice, guicey'
 categories: ''
 cover: ''
+share: true
+comments: true
 
 ---
 
