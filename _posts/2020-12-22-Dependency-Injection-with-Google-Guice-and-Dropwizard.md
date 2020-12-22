@@ -9,8 +9,6 @@ cover: ''
 
 ---
 
-**Introduction**
-
 Dropwizard is a lightweight framework for building fast and reliable RESTful services in Java, it is an opinionated framework that comes configured with libraries such as Jetty, hibernate, jersey, Jackson, metrics etc. 
 
 In my opinion, there are two main challenges I have experienced when it comes to development using dropwizard, first of, there are not so much help and materials when its comes to learning the core of the framework and secondly, development can get repetitive and boring, for those who are coming from Spring boot, one of the first things you will miss is Dependency Injection, fortunately, Google has a framework just for this, it’s called [Google Guice](https://github.com/google/guice). Google Guice is a library that aids Java development experience without the need to both about creating factories or use of the new Keyword. Integrating Guice with dropwizard helps to reduce some of the bore that comes with using the dropwizard framework.
