@@ -199,6 +199,9 @@ This is practically all you need to do to get set up with guice on dropwizard, b
 ```java
 package com.opefago.di.services;
 import io.dropwizard.lifecycle.Managed;
+import javax.inject.Singleton;
+
+@Singleton
 public class RedisService implements Managed {
   @Override  
   public void start() throws Exception {
