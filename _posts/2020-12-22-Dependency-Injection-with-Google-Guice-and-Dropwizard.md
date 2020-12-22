@@ -322,4 +322,4 @@ Google guice is a very powerful tool for Dependency Injection as well as for Spe
 **References**
 
 1. Design Patterns Explained – Dependency Injection with Code Examples* (2018). Available at: https://stackify.com/dependency-injection/ (Accessed: 9 December 2020).
-2. Guide to Google Guice | Baeldung* (2020). Available at: https://www.baeldung.com/guice (Accessed: 22 December 2020).
+2. Guide to Google Guice  Baeldung (2020). Available at: https://www.baeldung.com/guice (Accessed: 22 December 2020).
