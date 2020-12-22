@@ -12,14 +12,19 @@ cover: ''
 **Introduction**
 
 Dropwizard is a lightweight framework for building fast and reliable RESTful services in Java, it is an opinionated framework that comes configured with libraries such as Jetty, hibernate, jersey, Jackson, metrics etc. 
-In my opinion, there are two challenges I have experienced when it comes to development using dropwizard, first of, there are not so much help and materials when its comes to learning the core of the framework and secondly, development can get repetitive and boring, for those who are coming from Spring boot, one of the first things you will miss is Dependency Injection, fortunately, Google has a framework just for this, it’s called [Google Guice](https://github.com/google/guice). Google Guice is a library that aids Java development experience without the need to both about creating factories or use of the new Keyword. Integrating Guice with dropwizard helps to reduce some of the bore that comes with using the dropwizard framework.
+
+In my opinion, there are two main challenges I have experienced when it comes to development using dropwizard, first of, there are not so much help and materials when its comes to learning the core of the framework and secondly, development can get repetitive and boring, for those who are coming from Spring boot, one of the first things you will miss is Dependency Injection, fortunately, Google has a framework just for this, it’s called [Google Guice](https://github.com/google/guice). Google Guice is a library that aids Java development experience without the need to both about creating factories or use of the new Keyword. Integrating Guice with dropwizard helps to reduce some of the bore that comes with using the dropwizard framework.
+
 The first time I tried to integrate Guice with dropwizard, I struggled a little bit. I decided to document my experience so that others don’t have to suffer as I did ;)
 
 **Getting Started With Guice**
 
 SOLID principle highlights that while designing classes, they should have Single Responsibility as well as dependency inversion. Dependency Injection as a programming technique helps us achieve this by decoupling Object Creation from its usage as well as abstracting how the low level details are implemented, this helps to write clean code and also aids testing. For example, You have a class that turns on the light bulb called Bulb, and another that manages the smart home called SmartHome, SmartHome needs to turn on the light as well as handle other electrical interfaces in the house, SmartHome should not know anything about turning the lighting off and on, that is not its responsibility, it should only know how to talk to classes/interfaces that directly know how to trigger this actions. 
+
 NB: In reality, there should be an Interface that all other electrical appliance Class implements, it makes it easy for the SmartHome Object to talk to call a single method when interacting with its dependencies, but for this example, SmartHome will be interacting directly with the Bulb class.
-The logic for the turning on and off the light Bulb will be implemented in the Bulb class and the SmartHome class takes in this object in its constructor when it needs to be used, a Bulb object is created and passed into a SmartHome object. This might be okay when you are interacting with 1 or 2 objects but in production-ready apps, you might have hundreds and thousands of objects that need interaction, this will make your project cumbersome and it can get really hard to manage. This is where Dependency Injection libraries come in, you make use of annotations like @Inject when creating the classes and the library helps you to wire them automatically.
+
+The logic for the turning on and off the light Bulb will be implemented in the Bulb class and the SmartHome class takes in this object in its constructor when it needs to be used, a Bulb object is created and passed into a SmartHome object. This might be okay when you are interacting with 1 or 2 objects but in production-ready apps, you might have hundreds and thousands of objects that need interaction, this will make your project cumbersome and it can get really hard to manage. This is where Dependency Injection libraries shines, you make use of annotations like `@Inject` when creating the classes and the library helps you to wire them automatically.
+
 Guice is a framework that helps you to easily manage your dependencies and 
 
 **Guice and Dropwizard**
@@ -29,7 +34,9 @@ For this exercise, we will be building a simple service that stores values in a 
 **Prerequisite**
 
 To nicely integrate Guice into dropwizard, we will be making using of a very decent integration library called [dropwizard guice](https://github.com/xvik/dropwizard-guicey). This helps us to automatically integrate various moving part of the dropwizard framework using classpath scan. This would be familiar to you if you are coming from a Spring boot background. 
+
 We will be using [reddisson](https://github.com/redisson/redisson) A very good Redis client that provides high-performance async read and writes and provides TTL queues, retry queues and a host of other kinds of use cases right out of the box.
+
 We will be developing our dropwizard application using Java 8 as well as Gradle, if you prefer Maven, you can also follow the example without problems and IntelliJ as the IDE for development.
 
 **Gradle Dependencies**
@@ -271,6 +278,7 @@ public RedisService(final RedisConfiguration redisConfiguration){
 ```
 
 The `@inject` annotation notifies Guice to inject the dependency automatically for us. If you are familiar with Spring boot, this is analogous to using the `@Autowired` annotation. Now build and run:
+
 It should throw and error while trying to run, Nothing to worry about, google guice inject dependencies by specifying how you want to bind them, guicey does this autobinding by scanning your project path for Managed classes, Resources that have `@Path` annotations, HealthChecks, Filters annotated with `@WebFilter`, `@WebListener`, `@WebServlet` etc. But for other classes, you have to inform guicey how you want the binding to happen. In other to do that, create a class subclass of `AbstractModule`, and teach Guice how to create your unmanaged dependency as shown below:
 
 ```java
