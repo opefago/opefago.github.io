@@ -237,7 +237,7 @@ bootstrap.setConfigurationSourceProvider(
 );
 ```
 
-Next, You have to create a `RedisCongiration` class that maps the files in the app.yml to class parameters and methods, create a class like so:
+Next, You have to create a `RedisConfiguration` class that maps the files in the app.yml to class parameters and methods, create a class like so:
 
 ```java
 import com.fasterxml.jackson.annotation.JsonProperty;
