@@ -33,6 +33,7 @@
   <meta property="og.url" content="{{site.url}}">
   <meta property="og:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
   <meta property="og:description" content="{% if page.excerpt %}{{ page.excerpt | strip_html }}{% else %}{{ site.description }}{% endif %}">
+  <meta name="google-site-verification" content="Ow59Qcbs_KcVeLHpNSDSoc_8AwP2R5x4XC4sgWVvIJY" />
   {% if page.image %}
     <meta content="{{ site.url }}/images/{{ page.image }}" property="og:image">
     <meta content="1200" property="og:image:width">
@@ -64,6 +65,5 @@
   <link rel="stylesheet" href="{{ site.url }}/css/main.css?{{site.time | date: '%s%N'}}">
   <link rel="canonical" href="{% if page.canonical %}{{ page.canonical }}{% else %}{{ page.url | replace:'index.html','' | prepend: site.url | prepend: site.url }}{% endif %}">
   <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ site.url }}/feed.xml">
-  <meta name="google-site-verification" content="Ow59Qcbs_KcVeLHpNSDSoc_8AwP2R5x4XC4sgWVvIJY" />
   {% seo %}
 </head>
