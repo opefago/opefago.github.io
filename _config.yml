@@ -1,7 +1,7 @@
 # Site settings
 title: Damilola Fagoyinbo Opeyemi
 description: 'Design.Create.Iterate'
-url: 'http://opefago.com'
+url: 'https://opefago.com'
 baseurl: ''
 google_analytics: 'UA-156599109-1'
 facebook_id: '2756079061341516'
@@ -31,6 +31,8 @@ paginate: 10
 permalink: /:year/:title/
 markdown: kramdown
 highlighter: rouge
+encoding: utf-8
+theme: null
 
 sass:
     sass_dir: _sass

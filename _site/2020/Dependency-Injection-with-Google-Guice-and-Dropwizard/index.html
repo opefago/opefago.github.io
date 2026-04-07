@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
+
+  <title>Dependency Injection with Google Guice and Dropwizard</title>
+  <meta name="description" content="Dropwizard is a lightweight framework for building fast and reliable RESTful services in Java, it is an opinionated framework that comes configured with libraries such as Jetty, hibernate, jersey, Jackson, metrics etc.
+
+">
+  <meta name="author" content="Damilola Opeyemi Fagoyinbo">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Dependency Injection with Google Guice and Dropwizard">
+  <meta name="twitter:description" content="Dropwizard is a lightweight framework for building fast and reliable RESTful services in Java, it is an opinionated framework that comes configured with libraries such as Jetty, hibernate, jersey, Jackson, metrics etc.
+
+">
+  
+  <meta name="twitter:creator" content="ope_fago">
+  
+  
+    <meta name="twitter:image" content="https://opefago.com/images/favicons/favicon-194x194.png" />
+  
+
+
+  <meta property="og:type" content="article">
+  <meta property="fb:app_id" content="2756079061341516">
+  <meta property="og:url" content="https://opefago.com/2020/Dependency-Injection-with-Google-Guice-and-Dropwizard/">
+  <meta property="og:title" content="Dependency Injection with Google Guice and Dropwizard">
+  <meta property="og:description" content="Dropwizard is a lightweight framework for building fast and reliable RESTful services in Java, it is an opinionated framework that comes configured with libraries such as Jetty, hibernate, jersey, Jackson, metrics etc.
+
+">
+  <meta name="google-site-verification" content="Ow59Qcbs_KcVeLHpNSDSoc_8AwP2R5x4XC4sgWVvIJY" />
+  
+    <meta property="og:image" content="https://opefago.com/images/favicons/favicon-194x194.png" />
+  
+
+  <link rel="apple-touch-icon" sizes="57x57" href="https://opefago.com/images/favicons/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="https://opefago.com/images/favicons/apple-touch-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="https://opefago.com/images/favicons/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://opefago.com/images/favicons/apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="https://opefago.com/images/favicons/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="https://opefago.com/images/favicons/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="https://opefago.com/images/favicons/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="https://opefago.com/images/favicons/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://opefago.com/images/favicons/apple-touch-icon-180x180.png">
+  <link rel="icon" type="image/png" href="https://opefago.com/images/favicons/favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="https://opefago.com/images/favicons/favicon-194x194.png" sizes="194x194">
+  <link rel="icon" type="image/png" href="https://opefago.com/images/favicons/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="https://opefago.com/images/favicons/android-chrome-192x192.png" sizes="192x192">
+  <link rel="icon" type="image/png" href="https://opefago.com/images/favicons/favicon-16x16.png" sizes="16x16">
+  <link rel="manifest" href="https://opefago.com/images/favicons/manifest.json">
+  <link rel="shortcut icon" href="https://opefago.com/images/favicons/favicon.ico">
+  <meta name="msapplication-TileColor" content="#ffc40d">
+  <meta name="msapplication-TileImage" content="https://opefago.com/images/favicons/mstile-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+  
+  <link rel="stylesheet" href="https://opefago.com/css/main.css?1775592546963006000">
+  <link rel="alternate" type="application/rss+xml" title="Damilola Fagoyinbo Opeyemi" href="https://opefago.com/feed.xml">
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Dependency Injection with Google Guice and Dropwizard | Damilola Fagoyinbo Opeyemi</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Dependency Injection with Google Guice and Dropwizard" />
+<meta name="author" content="Damilola Opeyemi Fagoyinbo" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Dropwizard is a lightweight framework for building fast and reliable RESTful services in Java, it is an opinionated framework that comes configured with libraries such as Jetty, hibernate, jersey, Jackson, metrics etc." />
+<meta property="og:description" content="Dropwizard is a lightweight framework for building fast and reliable RESTful services in Java, it is an opinionated framework that comes configured with libraries such as Jetty, hibernate, jersey, Jackson, metrics etc." />
+<link rel="canonical" href="https://opefago.com/2020/Dependency-Injection-with-Google-Guice-and-Dropwizard/" />
+<meta property="og:url" content="https://opefago.com/2020/Dependency-Injection-with-Google-Guice-and-Dropwizard/" />
+<meta property="og:site_name" content="Damilola Fagoyinbo Opeyemi" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-12-22T07:18:33-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Dependency Injection with Google Guice and Dropwizard" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Damilola Opeyemi Fagoyinbo"},"dateModified":"2020-12-22T07:18:33-08:00","datePublished":"2020-12-22T07:18:33-08:00","description":"Dropwizard is a lightweight framework for building fast and reliable RESTful services in Java, it is an opinionated framework that comes configured with libraries such as Jetty, hibernate, jersey, Jackson, metrics etc.","headline":"Dependency Injection with Google Guice and Dropwizard","mainEntityOfPage":{"@type":"WebPage","@id":"https://opefago.com/2020/Dependency-Injection-with-Google-Guice-and-Dropwizard/"},"url":"https://opefago.com/2020/Dependency-Injection-with-Google-Guice-and-Dropwizard/"}</script>
+<!-- End Jekyll SEO tag -->
+
+</head>
+
+
+  <body>
+    <span class="mobile btn-mobile-menu">
+  <i class="icon icon-list btn-mobile-menu__icon"></i>
+  <i class="icon icon-x-circle btn-mobile-close__icon hidden"></i>
+</span>
+
+<header class="panel-cover" style="background-image: url(/images/cover.jpg)">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+        <a href="/" title="link to home of Damilola Fagoyinbo Opeyemi">
+          <img src="/images/profile.jpg" class="user-image" alt="My Profile Photo">
+          <h1 class="panel-cover__title panel-title">Damilola Fagoyinbo Opeyemi</h1>
+        </a>
+        <hr class="panel-cover__divider">
+        <p class="panel-cover__description">Design.Create.Iterate</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary">
+
+        <div class="navigation-wrapper">
+
+          <nav class="cover-navigation cover-navigation--primary">
+            <ul class="navigation">
+              <li class="navigation__item"><a href="/#blog" title="link to Damilola Fagoyinbo Opeyemi blog" class="blog-button">Blog</a></li>
+            </ul>
+          </nav>
+
+          <nav class="cover-navigation navigation--social">
+            <ul class="navigation">
+
+            
+              <!-- Twitter -->
+              <li class="navigation__item">
+                <a href="http://twitter.com/ope_fago" title="@ope_fago on Twitter" target="_blank">
+                  <i class="icon icon-social-twitter"></i>
+                  <span class="label">Twitter</span>
+                </a>
+              </li>
+            
+
+            
+              <!-- Facebook -->
+              <li class="navigation__item">
+                <a href="http://fb.me/damian.machine" title="damian.machine on Facebook" target="_blank">
+                  <i class="icon icon-social-facebook"></i>
+                  <span class="label">Facebook</span>
+                </a>
+              </li>
+            
+
+            
+              <!-- LinkedIn -->
+              <li class="navigation__item">
+                <a href="https://www.linkedin.com/in/damilola-fagoyinbo-16951730" title="damilola-fagoyinbo-16951730 on LinkedIn" target="_blank">
+                  <i class="icon icon-social-linkedin"></i>
+                  <span class="label">LinkedIn</span>
+                </a>
+              </li>
+            
+
+            
+              <!-- GitHub -->
+              <li class="navigation__item">
+                <a href="https://www.github.com/opefago" title="opefago on GitHub" target="_blank">
+                  <i class="icon icon-social-github"></i>
+                  <span class="label">GitHub</span>
+                </a>
+              </li>
+            
+
+            
+              <!-- Email -->
+              <li class="navigation__item">
+                <a href="mailto:damilola.fagoyinbo@gmail.com" title="Email damilola.fagoyinbo@gmail.com" target="_blank">
+                  <i class="icon icon-mail"></i>
+                  <span class="label">Email</span>
+                </a>
+              </li>
+            
+
+            <!-- RSS -->
+            <li class="navigation__item">
+              <a href="/feed.xml" title="Subscribe" target="_blank">
+                <i class="icon icon-rss"></i>
+                <span class="label">RSS</span>
+              </a>
+            </li>
+
+            </ul>
+          </nav>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="panel-cover--overlay"></div>
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+      <div class="content-wrapper__inner">
+        <article class="post-container post-container--single">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2020-12-22 07:18" class="post-meta__date date">22 Dec 2020</time>
+      
+      &#8226; <span class="post-meta__tags">on <a href="/tags/#dropwizard">dropwizard</a>, <a href="/tags/#dependency Injection">dependency Injection</a>, <a href="/tags/#guice">guice</a>, <a href="/tags/#guicey">guicey</a></span>
+      
+    </div>
+    <h1 class="post-title">Dependency Injection with Google Guice and Dropwizard</h1>
+  </header>
+
+  <!-- Go to www.addthis.com/dashboard to customize your tools -->
+<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5e2a146accffcb76"></script>
+
+  <section class="post">
+    <p>Dropwizard is a lightweight framework for building fast and reliable RESTful services in Java, it is an opinionated framework that comes configured with libraries such as Jetty, hibernate, jersey, Jackson, metrics etc.</p>
+
+<p>In my opinion, there are two main challenges I have experienced when it comes to development using dropwizard, first of, there are not so much help and materials when its comes to learning the core of the framework and secondly, development can get repetitive and boring, for those who are coming from Spring boot, one of the first things you will miss is Dependency Injection, fortunately, Google has a framework just for this, it’s called <a href="https://github.com/google/guice">Google Guice</a>. Google Guice is a library that aids Java development experience without the need to both about creating factories or use of the new Keyword. Integrating Guice with dropwizard helps to reduce some of the bore that comes with using the dropwizard framework.</p>
+
+<p>The first time I tried to integrate Guice with dropwizard, I struggled a little bit. I decided to document my experience so that others don’t have to suffer as I did ;)</p>
+
+<p><strong>Getting Started With Guice</strong></p>
+
+<p>SOLID principle highlights that while designing classes, they should have Single Responsibility as well as dependency inversion. Dependency Injection as a programming technique helps us achieve this by decoupling Object Creation from its usage as well as abstracting how the low level details are implemented, this helps to write clean code and also aids testing. For example, You have a class that turns on the light bulb called Bulb, and another that manages the smart home called SmartHome, SmartHome needs to turn on the light as well as handle other electrical interfaces in the house, SmartHome should not know anything about turning the lighting off and on, that is not its responsibility, it should only know how to talk to classes/interfaces that directly know how to trigger this actions.</p>
+
+<p>NB: In reality, there should be an Interface that all other electrical appliance Class implements, it makes it easy for the SmartHome Object to talk to call a single method when interacting with its dependencies, but for this example, SmartHome will be interacting directly with the Bulb class.</p>
+
+<p>The logic for the turning on and off the light Bulb will be implemented in the Bulb class and the SmartHome class takes in this object in its constructor when it needs to be used, a Bulb object is created and passed into a SmartHome object. This might be okay when you are interacting with 1 or 2 objects but in production-ready apps, you might have hundreds and thousands of objects that need interaction, this will make your project cumbersome and it can get really hard to manage. This is where Dependency Injection libraries shines, you make use of annotations like <code class="language-plaintext highlighter-rouge">@Inject</code> when creating the classes and the library helps you to wire them automatically.</p>
+
+<p>Guice is a framework that helps you to easily manage your dependencies and</p>
+
+<p><strong>Guice and Dropwizard</strong></p>
+
+<p>For this exercise, we will be building a simple service that stores values in a key-value database using Redis, this gives us a full grasp of how to wire configurations to services that require them as well as how to create dependencies for services. By the end of the articles, you would be very comfortable using Guice and dropwizard.</p>
+
+<p><strong>Prerequisite</strong></p>
+
+<p>To nicely integrate Guice into dropwizard, we will be making using of a very decent integration library called <a href="https://github.com/xvik/dropwizard-guicey">dropwizard guice</a>. This helps us to automatically integrate various moving part of the dropwizard framework using classpath scan. This would be familiar to you if you are coming from a Spring boot background.</p>
+
+<p>We will be using <a href="https://github.com/redisson/redisson">reddisson</a> A very good Redis client that provides high-performance async read and writes and provides TTL queues, retry queues and a host of other kinds of use cases right out of the box.</p>
+
+<p>We will be developing our dropwizard application using Java 8 as well as Gradle, if you prefer Maven, you can also follow the example without problems and IntelliJ as the IDE for development.</p>
+
+<p><strong>Gradle Dependencies</strong></p>
+
+<p>Create a new project and In addition to the dropwizard-core add the following dependencies to our gradle file:</p>
+
+<div class="language-groovy highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">implementation</span> <span class="s1">'ru.vyarus:dropwizard-guicey:5.2.0'</span>
+<span class="n">implementation</span> <span class="s1">'org.redisson:redisson:3.14.0'</span>
+</code></pre></div></div>
+
+<p>And also, I used lombok to ease development, hence, the following dependencies should also be added;</p>
+
+<div class="language-groovy highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">compileOnly</span> <span class="s1">'org.projectlombok:lombok:1.18.16'</span>
+<span class="n">annotationProcessor</span> <span class="s1">'org.projectlombok:lombok:1.18.16'</span>
+<span class="n">testCompileOnly</span> <span class="s1">'org.projectlombok:lombok:1.18.16'</span>
+<span class="n">testAnnotationProcessor</span> <span class="s1">'org.projectlombok:lombok:1.18.16'</span>
+
+</code></pre></div></div>
+
+<p><strong>Configuration</strong></p>
+
+<p>When working with Dropwizard, one of the first things you need to setup is the configuration file, create a file named app.yml in the project root directory and add the following to it:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">server</span><span class="pi">:</span> 
+<span class="err">	</span><span class="na">applicationConnectors</span><span class="pi">:</span>  
+<span class="err">		</span><span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">http</span>   
+<span class="na">			port</span><span class="pi">:</span> <span class="s">9000</span> 
+<span class="na">	adminConnectors</span><span class="pi">:</span>  
+<span class="err">		</span><span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">http</span>   
+<span class="na">			port</span><span class="pi">:</span> <span class="m">9001</span>
+</code></pre></div></div>
+
+<p>Next create a class called <code class="language-plaintext highlighter-rouge">AppConfiguration.java</code> where we can access the configuration parameters with the following:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="nn">com.opefago.di.config</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">io.dropwizard.Configuration</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.Getter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.validation.constraints.NotNull</span><span class="o">;</span>
+
+<span class="nd">@NotNull</span>
+<span class="nd">@Getterpublic</span> 
+<span class="kd">class</span> <span class="nc">AppConfiguration</span> <span class="kd">extends</span> <span class="nc">Configuration</span> <span class="o">{}</span>
+</code></pre></div></div>
+
+<p><strong>Application</strong></p>
+
+<p>Create an <code class="language-plaintext highlighter-rouge">App.java</code> class and add this base application to setup a running dropwizard application:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="nn">com.opefago.di</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.opefago.di.config.AppConfiguration</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.dropwizard.Application</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.dropwizard.setup.Environment</span><span class="o">;</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">App</span> <span class="kd">extends</span> <span class="nc">Application</span><span class="o">&lt;</span><span class="nc">AppConfiguration</span><span class="o">&gt;</span> <span class="o">{</span> 	
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+    <span class="k">new</span> <span class="nf">App</span><span class="o">().</span><span class="na">run</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>  
+  <span class="o">}</span>
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">(</span><span class="nc">AppConfiguration</span> <span class="n">configuration</span><span class="o">,</span> <span class="nc">Environment</span> <span class="n">environment</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>Running the Application</strong></p>
+
+<p>Before we can run the application, we have to setup the gradle file to have the right plugins for bootstrapping a dropwizard project, this applies if you are using gradle, of you are using maven, the setup is slightly different, you can refer to the tutorial <a href="https://www.baeldung.com/java-dropwizard">here</a>:</p>
+
+<div class="language-groovy highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.time.ZoneId</span>
+<span class="kn">import</span> <span class="nn">java.time.ZonedDateTime</span>
+<span class="kn">import</span> <span class="nn">java.time.format.DateTimeFormatter</span>
+<span class="kn">import</span> <span class="nn">java.time.ZoneId</span>
+<span class="kn">import</span> <span class="nn">java.time.ZonedDateTime</span>
+<span class="kn">import</span> <span class="nn">java.time.format.DateTimeFormatter</span>
+
+<span class="n">plugins</span> <span class="o">{</span>  
+  <span class="n">id</span> <span class="s1">'java'</span>  
+  <span class="n">id</span> <span class="s1">'com.github.johnrengelman.shadow'</span> <span class="n">version</span> <span class="s1">'5.2.0'</span>
+<span class="o">}</span>
+
+<span class="n">group</span> <span class="s1">'com.opefago.di'</span>
+<span class="n">version</span> <span class="s1">'1.0'</span>
+<span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">'java'</span>
+<span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">'application'</span>
+<span class="n">mainClassName</span> <span class="o">=</span> <span class="s1">'com.opefago.di.App'</span>
+<span class="n">sourceCompatibility</span> <span class="o">=</span> <span class="mf">1.8</span>
+<span class="n">targetCompatibility</span> <span class="o">=</span> <span class="mf">1.8</span>
+<span class="n">repositories</span> <span class="o">{</span>  
+  <span class="n">mavenCentral</span><span class="o">()</span>
+<span class="o">}</span>
+<span class="kt">def</span> <span class="n">versions</span> <span class="o">=</span> <span class="o">[</span>    
+  <span class="n">dropwizard</span> <span class="o">:</span> <span class="s2">"1.3.14"</span><span class="o">,</span>
+  <span class="nl">guice:</span> <span class="s2">"5.2.0"</span><span class="o">,</span>
+  <span class="nl">lombok:</span> <span class="s2">"1.18.16"</span>
+<span class="o">]</span>
+<span class="n">dependencies</span> <span class="o">{</span>  
+  <span class="n">testCompile</span> <span class="nl">group:</span> <span class="s1">'junit'</span><span class="o">,</span> <span class="nl">name:</span> <span class="s1">'junit'</span><span class="o">,</span> <span class="nl">version:</span> <span class="s1">'4.12'</span>
+  <span class="n">implementation</span> <span class="s2">"ru.vyarus:dropwizard-guicey:$versions.guice"</span>
+  <span class="n">implementation</span> <span class="s2">"org.redisson:redisson:3.14.0"</span>
+  <span class="n">compileOnly</span> <span class="s2">"org.projectlombok:lombok:$versions.lombok"</span>
+  <span class="n">annotationProcessor</span> <span class="s2">"org.projectlombok:lombok:$versions.lombok"</span>
+  <span class="n">testCompileOnly</span> <span class="s2">"org.projectlombok:lombok:$versions.lombok"</span>
+  <span class="n">testAnnotationProcessor</span> <span class="s2">"org.projectlombok:lombok:$versions.lombok"</span>
+  <span class="n">implementation</span> <span class="s2">"io.dropwizard:dropwizard-core:$versions.dropwizard"</span>
+<span class="o">}</span>
+<span class="n">shadowJar</span> <span class="o">{</span>  
+  <span class="n">mergeServiceFiles</span><span class="o">()</span>  
+  <span class="n">exclude</span> <span class="s1">'META-INF/*.DSA'</span><span class="o">,</span> <span class="s1">'META-INF/*.RSA'</span><span class="o">,</span> <span class="s1">'META-INF/*.SF'</span>  
+  <span class="n">manifest</span> <span class="o">{</span>    
+    <span class="n">attributes</span> <span class="s1">'Implementation-Title'</span><span class="o">:</span> <span class="n">rootProject</span><span class="o">.</span><span class="na">name</span>    
+    <span class="n">attributes</span> <span class="s1">'Implementation-Version'</span><span class="o">:</span> <span class="n">rootProject</span><span class="o">.</span><span class="na">version</span>    
+    <span class="n">attributes</span> <span class="s1">'Implementation-Vendor-Id'</span><span class="o">:</span> <span class="n">rootProject</span><span class="o">.</span><span class="na">group</span>    
+    <span class="n">attributes</span> <span class="s1">'Build-Time'</span><span class="o">:</span> <span class="n">ZonedDateTime</span><span class="o">.*</span><span class="n">now</span><span class="o">*(</span><span class="n">ZoneId</span><span class="o">.*</span><span class="n">of</span><span class="o">*(</span><span class="s2">"UTC"</span><span class="o">)).</span><span class="na">format</span><span class="o">(</span><span class="n">DateTimeFormatter</span><span class="o">.*</span><span class="n">ISO_ZONED_DATE_TIME</span><span class="o">*)</span>    
+    <span class="n">attributes</span> <span class="s1">'Built-By'</span><span class="o">:</span> <span class="n">InetAddress</span><span class="o">.*</span><span class="n">localHost</span><span class="o">*.</span><span class="na">hostName</span>    
+    <span class="n">attributes</span> <span class="s1">'Created-By'</span><span class="o">:</span> <span class="s1">'Gradle '</span> <span class="o">+</span> <span class="n">gradle</span><span class="o">.</span><span class="na">gradleVersion</span>    
+    <span class="n">attributes</span> <span class="s1">'Main-Class'</span><span class="o">:</span> <span class="s2">"com.opefago.di.App"</span>  
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>With this, we should have a minimal running dropwizard app that can run on port 9000, let’s take it for a spin before we progress, run the following command on the terminal</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code> ./gradlew build
+</code></pre></div></div>
+
+<p>This should generate a jar file that is post fixed what ‘-all’ in the build/libs folder. Now run the app with the following command:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java <span class="nt">-jar</span> build/libs/dropwizard-guice-di-1.0-all.jar server app.yml
+</code></pre></div></div>
+
+<p>If all things go well, you should have a running application that does nothing interesting yet. Now Let’s integrate google guice into it and afterwards set up a service and a resource to see the fill power of google guice in display, we will conclude by also adding healthcheck as well.</p>
+
+<p><strong>Adding Google Guice</strong></p>
+
+<p>In the <code class="language-plaintext highlighter-rouge">App.java</code> class, add the the initialise method as shown below:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">initialize</span><span class="o">(</span><span class="nc">Bootstrap</span><span class="o">&lt;</span><span class="nc">AppConfiguration</span><span class="o">&gt;</span> <span class="n">bootstrap</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">bootstrap</span><span class="o">.</span><span class="na">addBundle</span><span class="o">(</span>
+    <span class="nc">GuiceBundle</span><span class="o">.</span><span class="na">builder</span><span class="o">().</span><span class="na">enableAutoConfig</span><span class="o">(</span><span class="n">getClass</span><span class="o">().</span><span class="na">getPackage</span><span class="o">().</span><span class="na">getName</span><span class="o">()).</span><span class="na">build</span><span class="o">()</span>
+  <span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>This is going to add a dropwizard bundle that scans your project path for all Managed, healthcheck, etc as well as their dependencies, as soon as this is done, all you need is to write your code and it automatically picks them, this makes your project simple enough and leave your main class decluttered from too many boilerplate.</p>
+
+<p><strong>Services</strong></p>
+
+<p>This is practically all you need to do to get set up with guice on dropwizard, but in other to get a feel of the power that guice brings into dropwizard, let’s proceed to create a service that communicates with redis. Create a class called <code class="language-plaintext highlighter-rouge">RedisService</code>, I prefer my services to be implementation of Managed interface provided by dropwizard, so that they can be plugged into the dropwizard lifecycle, you can used the start and stop method to ensure that dependencies are properly managed by the dropwizard lifecycle and more importantly, so that they can be automatically scanned and picked up by Guicey without any extra work.Our code should be looking like so:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="nn">com.opefago.di.services</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.dropwizard.lifecycle.Managed</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.inject.Singleton</span><span class="o">;</span>
+
+<span class="nd">@Singleton</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RedisService</span> <span class="kd">implements</span> <span class="nc">Managed</span> <span class="o">{</span>
+  <span class="nd">@Override</span>  
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+  <span class="o">}</span>
+  <span class="nd">@Override</span>  
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">stop</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>As I mentioned earlier, I’ll be using redisson client for connecting to redis. There are other redis clients available out there, I just like that redission provides all types of queue types out of the box. Before we get started, add the following configuration to app.yaml file</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">redis</span><span class="pi">:</span> 
+<span class="err">	</span><span class="na">uri</span><span class="pi">:</span> <span class="s">${REDIS_URI:-localhost}</span> 
+<span class="na">	port</span><span class="pi">:</span> <span class="s">${REDIS_PORT:-6379}</span> 
+<span class="na">	idleConnectionTimeout</span><span class="pi">:</span> <span class="s">10000</span> 
+<span class="na">	connectTimeout</span><span class="pi">:</span> <span class="s">10000</span> 
+<span class="na">	timeout</span><span class="pi">:</span> <span class="s">3000</span> 
+<span class="na">	retryAttempts</span><span class="pi">:</span> <span class="s">3</span> 
+<span class="na">	retryInterval</span><span class="pi">:</span> <span class="m">1500</span>
+</code></pre></div></div>
+
+<p>Notice how the uri and port fields are specified, this indicates that they need to be substituted by environment variables with defaults if the environment variables are not found. Environment variable swapping does not come out of the box in dropwizard, if you run this, the variables will be presented as specified, you have to make dropwizard aware of this behavior. To do that, add the following code to the initialize method of our main class:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">bootstrap</span><span class="o">.</span><span class="na">setConfigurationSourceProvider</span><span class="o">(</span>    
+  <span class="k">new</span> <span class="nf">SubstitutingSourceProvider</span><span class="o">(</span><span class="n">bootstrap</span><span class="o">.</span><span class="na">getConfigurationSourceProvider</span><span class="o">(),</span>        
+                                 <span class="k">new</span> <span class="nf">EnvironmentVariableSubstitutor</span><span class="o">(</span><span class="kc">false</span><span class="o">)</span>    
+                                <span class="o">)</span>
+<span class="o">);</span>
+</code></pre></div></div>
+
+<p>Next, You have to create a <code class="language-plaintext highlighter-rouge">RedisConfiguration</code> class that maps the files in the app.yml to class parameters and methods, create a class like so:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">com.fasterxml.jackson.annotation.JsonProperty</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.Getter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.validation.constraints.NotNull</span><span class="o">;</span>
+
+<span class="nd">@NotNull</span>
+<span class="nd">@Getter</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RedisConfiguration</span> <span class="o">{</span>  
+  <span class="nd">@JsonProperty</span><span class="o">(</span><span class="s">"uri"</span><span class="o">)</span> <span class="kd">private</span> <span class="nc">String</span> <span class="n">uri</span><span class="o">;</span> 
+  <span class="nd">@JsonProperty</span><span class="o">(</span><span class="s">"port"</span><span class="o">)</span> <span class="kd">private</span> <span class="nc">String</span> <span class="n">port</span><span class="o">;</span>   
+  <span class="nd">@JsonProperty</span><span class="o">(</span><span class="s">"idleConnectionTimeout"</span><span class="o">)</span> <span class="kd">private</span> <span class="kt">int</span> <span class="n">idleConnectionTimeout</span><span class="o">;</span>
+  <span class="nd">@JsonProperty</span><span class="o">(</span><span class="s">"connectTimeout"</span><span class="o">)</span> <span class="kd">private</span> <span class="kt">int</span> <span class="n">connectTimeout</span><span class="o">;</span>  
+  <span class="nd">@JsonProperty</span><span class="o">(</span><span class="s">"timeout"</span><span class="o">)</span> <span class="kd">private</span> <span class="kt">int</span> <span class="n">timeout</span><span class="o">;</span>  
+  <span class="nd">@JsonProperty</span><span class="o">(</span><span class="s">"retryAttempts"</span><span class="o">)</span> <span class="kd">private</span> <span class="kt">int</span> <span class="n">retryAttempts</span><span class="o">;</span>  
+  <span class="nd">@JsonProperty</span><span class="o">(</span><span class="s">"retryInterval"</span><span class="o">)</span> <span class="kd">private</span> <span class="kt">int</span> <span class="n">retryInterval</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>And then update your AppConfiguration class like so:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AppConfiguration</span> <span class="kd">extends</span> <span class="nc">Configuration</span> <span class="o">{</span>  
+  <span class="nd">@JsonProperty</span><span class="o">(</span><span class="s">"redis"</span><span class="o">)</span> <span class="kd">private</span> <span class="nc">RedisConfiguration</span> <span class="n">redisConfiguration</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>Now that we have to make this configuration available to the Redis Service, this will be used to start up and setup the redisson client, to do that, first create a field in RedisService so:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">final</span> <span class="kd">private</span> <span class="nc">RedisConfiguration</span> <span class="n">redisConfiguration</span><span class="o">;</span>
+</code></pre></div></div>
+
+<p>You should create a construction that helps to initialise this field as well with an <code class="language-plaintext highlighter-rouge">@Inject</code> annotation, like so:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Inject</span>
+<span class="kd">public</span> <span class="nf">RedisService</span><span class="o">(</span><span class="kd">final</span> <span class="nc">RedisConfiguration</span> <span class="n">redisConfiguration</span><span class="o">){</span>  
+  <span class="k">this</span><span class="o">.</span><span class="na">redisConfiguration</span> <span class="o">=</span> <span class="n">redisConfiguration</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">@inject</code> annotation notifies Guice to inject the dependency automatically for us. If you are familiar with Spring boot, this is analogous to using the <code class="language-plaintext highlighter-rouge">@Autowired</code> annotation. Now build and run:</p>
+
+<p>It should throw and error while trying to run, Nothing to worry about, google guice inject dependencies by specifying how you want to bind them, guicey does this autobinding by scanning your project path for Managed classes, Resources that have <code class="language-plaintext highlighter-rouge">@Path</code> annotations, HealthChecks, Filters annotated with <code class="language-plaintext highlighter-rouge">@WebFilter</code>, <code class="language-plaintext highlighter-rouge">@WebListener</code>, <code class="language-plaintext highlighter-rouge">@WebServlet</code> etc. But for other classes, you have to inform guicey how you want the binding to happen. In other to do that, create a class subclass of <code class="language-plaintext highlighter-rouge">AbstractModule</code>, and teach Guice how to create your unmanaged dependency as shown below:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="nn">com.opefago.di.config</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.google.inject.AbstractModule</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.google.inject.Provides</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConfigModule</span> <span class="kd">extends</span> <span class="nc">AbstractModule</span> <span class="o">{</span>  
+  <span class="nd">@Provides</span>  
+  <span class="kd">public</span> <span class="nc">RedisConfiguration</span> <span class="nf">getRedisConfiguration</span><span class="o">(</span><span class="nc">AppConfiguration</span> <span class="n">configuration</span><span class="o">){</span>    
+    <span class="k">return</span> <span class="n">configuration</span><span class="o">.</span><span class="na">getRedisConfiguration</span><span class="o">();</span>  
+  <span class="o">}</span>
+
+  <span class="nd">@Override</span>  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">()</span> <span class="o">{</span>    
+    <span class="kd">super</span><span class="o">.</span><span class="na">configure</span><span class="o">();</span>  
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>The next step will be to register this Module Class so that Guice is aware of it, modify your initialise method in the main class to like like so:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">initialize</span><span class="o">(</span><span class="nc">Bootstrap</span><span class="o">&lt;</span><span class="nc">AppConfiguration</span><span class="o">&gt;</span> <span class="n">bootstrap</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">bootstrap</span><span class="o">.</span><span class="na">setConfigurationSourceProvider</span><span class="o">(</span>      
+    <span class="k">new</span> <span class="nf">SubstitutingSourceProvider</span><span class="o">(</span><span class="n">bootstrap</span><span class="o">.</span><span class="na">getConfigurationSourceProvider</span><span class="o">(),</span>          
+                                   <span class="k">new</span> <span class="nf">EnvironmentVariableSubstitutor</span><span class="o">(</span><span class="kc">false</span><span class="o">)));</span>
+  
+  <span class="n">bootstrap</span><span class="o">.</span><span class="na">addBundle</span><span class="o">(</span>
+    <span class="nc">GuiceBundle</span><span class="o">.</span><span class="na">builder</span><span class="o">().</span><span class="na">enableAutoConfig</span><span class="o">(</span><span class="n">getClass</span><span class="o">().</span><span class="na">getPackage</span><span class="o">().</span><span class="na">getName</span><span class="o">()).</span><span class="na">modules</span><span class="o">(</span>
+      <span class="k">new</span> <span class="nf">ConfigModule</span><span class="o">()).</span><span class="na">build</span><span class="o">()</span>
+  <span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>Now build and run the project again, and everything should work out of the box.
+With this, we have google guice properly set up and hopefully, understand the basics and can work around almost any challenge. I won’t go into the project details, to see the project in its entirety, visit the repository <a href="https://github.com/opefago/dropwizard-guice-di">here</a>. Hope this material has been of help.</p>
+
+<p><strong>Conclusion</strong></p>
+
+<p>Google guice is a very powerful tool for Dependency Injection as well as for Speeding up development, we have only scratched the surface here, Dropwizard though lightweight is also a very good framework for API development projects, with google guice, tons of boilerplate can be avoided.</p>
+
+<p><strong>References</strong></p>
+
+<ol>
+  <li>Design Patterns Explained – Dependency Injection with Code Examples* (2018). Available at: https://stackify.com/dependency-injection/ (Accessed: 9 December 2020).</li>
+  <li>Guide to Google Guice  Baeldung (2020). Available at: https://www.baeldung.com/guice (Accessed: 22 December 2020).</li>
+</ol>
+
+  </section>
+  <section id="disqus_thread"></section><!-- /#disqus_thread -->
+</article>
+
+    <script type="text/javascript">
+      var disqus_config = function () {
+        this.page.url = 'https://opefago.com/2020/Dependency-Injection-with-Google-Guice-and-Dropwizard/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '/2020/Dependency-Injection-with-Google-Guice-and-Dropwizard'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+      };
+
+      (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//opefago.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+       })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+
+      </div>
+
+      <footer class="footer">
+  <span class="footer__copyright">&copy; 2026 Damilola Opeyemi Fagoyinbo. All rights reserved.</span>
+</footer>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js?1775592546963006000"></script>
+
+
+    </div>
+  </body>
+</html>

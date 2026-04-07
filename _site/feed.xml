@@ -3,19 +3,337 @@
   <channel>
     <title>Damilola Fagoyinbo Opeyemi</title>
     <description>Design.Create.Iterate</description>
-    <link>http://localhost:4000/</link>
-    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 12 Aug 2020 00:24:11 +0300</pubDate>
-    <lastBuildDate>Wed, 12 Aug 2020 00:24:11 +0300</lastBuildDate>
-    <generator>Jekyll v3.8.5</generator>
+    <link>https://opefago.com/</link>
+    <atom:link href="https://opefago.com/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Tue, 07 Apr 2026 13:09:06 -0700</pubDate>
+    <lastBuildDate>Tue, 07 Apr 2026 13:09:06 -0700</lastBuildDate>
+    <generator>Jekyll v3.10.0</generator>
+    
+      <item>
+        <title>Dependency Injection with Google Guice and Dropwizard</title>
+        <description>&lt;p&gt;Dropwizard is a lightweight framework for building fast and reliable RESTful services in Java, it is an opinionated framework that comes configured with libraries such as Jetty, hibernate, jersey, Jackson, metrics etc.&lt;/p&gt;
+
+&lt;p&gt;In my opinion, there are two main challenges I have experienced when it comes to development using dropwizard, first of, there are not so much help and materials when its comes to learning the core of the framework and secondly, development can get repetitive and boring, for those who are coming from Spring boot, one of the first things you will miss is Dependency Injection, fortunately, Google has a framework just for this, it’s called &lt;a href=&quot;https://github.com/google/guice&quot;&gt;Google Guice&lt;/a&gt;. Google Guice is a library that aids Java development experience without the need to both about creating factories or use of the new Keyword. Integrating Guice with dropwizard helps to reduce some of the bore that comes with using the dropwizard framework.&lt;/p&gt;
+
+&lt;p&gt;The first time I tried to integrate Guice with dropwizard, I struggled a little bit. I decided to document my experience so that others don’t have to suffer as I did ;)&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Getting Started With Guice&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;SOLID principle highlights that while designing classes, they should have Single Responsibility as well as dependency inversion. Dependency Injection as a programming technique helps us achieve this by decoupling Object Creation from its usage as well as abstracting how the low level details are implemented, this helps to write clean code and also aids testing. For example, You have a class that turns on the light bulb called Bulb, and another that manages the smart home called SmartHome, SmartHome needs to turn on the light as well as handle other electrical interfaces in the house, SmartHome should not know anything about turning the lighting off and on, that is not its responsibility, it should only know how to talk to classes/interfaces that directly know how to trigger this actions.&lt;/p&gt;
+
+&lt;p&gt;NB: In reality, there should be an Interface that all other electrical appliance Class implements, it makes it easy for the SmartHome Object to talk to call a single method when interacting with its dependencies, but for this example, SmartHome will be interacting directly with the Bulb class.&lt;/p&gt;
+
+&lt;p&gt;The logic for the turning on and off the light Bulb will be implemented in the Bulb class and the SmartHome class takes in this object in its constructor when it needs to be used, a Bulb object is created and passed into a SmartHome object. This might be okay when you are interacting with 1 or 2 objects but in production-ready apps, you might have hundreds and thousands of objects that need interaction, this will make your project cumbersome and it can get really hard to manage. This is where Dependency Injection libraries shines, you make use of annotations like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@Inject&lt;/code&gt; when creating the classes and the library helps you to wire them automatically.&lt;/p&gt;
+
+&lt;p&gt;Guice is a framework that helps you to easily manage your dependencies and&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Guice and Dropwizard&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;For this exercise, we will be building a simple service that stores values in a key-value database using Redis, this gives us a full grasp of how to wire configurations to services that require them as well as how to create dependencies for services. By the end of the articles, you would be very comfortable using Guice and dropwizard.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Prerequisite&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;To nicely integrate Guice into dropwizard, we will be making using of a very decent integration library called &lt;a href=&quot;https://github.com/xvik/dropwizard-guicey&quot;&gt;dropwizard guice&lt;/a&gt;. This helps us to automatically integrate various moving part of the dropwizard framework using classpath scan. This would be familiar to you if you are coming from a Spring boot background.&lt;/p&gt;
+
+&lt;p&gt;We will be using &lt;a href=&quot;https://github.com/redisson/redisson&quot;&gt;reddisson&lt;/a&gt; A very good Redis client that provides high-performance async read and writes and provides TTL queues, retry queues and a host of other kinds of use cases right out of the box.&lt;/p&gt;
+
+&lt;p&gt;We will be developing our dropwizard application using Java 8 as well as Gradle, if you prefer Maven, you can also follow the example without problems and IntelliJ as the IDE for development.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Gradle Dependencies&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Create a new project and In addition to the dropwizard-core add the following dependencies to our gradle file:&lt;/p&gt;
+
+&lt;div class=&quot;language-groovy highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;implementation&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;ru.vyarus:dropwizard-guicey:5.2.0&apos;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;implementation&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;org.redisson:redisson:3.14.0&apos;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;And also, I used lombok to ease development, hence, the following dependencies should also be added;&lt;/p&gt;
+
+&lt;div class=&quot;language-groovy highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;compileOnly&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;org.projectlombok:lombok:1.18.16&apos;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;annotationProcessor&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;org.projectlombok:lombok:1.18.16&apos;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;testCompileOnly&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;org.projectlombok:lombok:1.18.16&apos;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;testAnnotationProcessor&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;org.projectlombok:lombok:1.18.16&apos;&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Configuration&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;When working with Dropwizard, one of the first things you need to setup is the configuration file, create a file named app.yml in the project root directory and add the following to it:&lt;/p&gt;
+
+&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;na&quot;&gt;server&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; 
+&lt;span class=&quot;err&quot;&gt;	&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;applicationConnectors&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;  
+&lt;span class=&quot;err&quot;&gt;		&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http&lt;/span&gt;   
+&lt;span class=&quot;na&quot;&gt;			port&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;9000&lt;/span&gt; 
+&lt;span class=&quot;na&quot;&gt;	adminConnectors&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;  
+&lt;span class=&quot;err&quot;&gt;		&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;http&lt;/span&gt;   
+&lt;span class=&quot;na&quot;&gt;			port&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;9001&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Next create a class called &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;AppConfiguration.java&lt;/code&gt; where we can access the configuration parameters with the following:&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;com.opefago.di.config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;io.dropwizard.Configuration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;lombok.Getter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;javax.validation.constraints.NotNull&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;nd&quot;&gt;@NotNull&lt;/span&gt;
+&lt;span class=&quot;nd&quot;&gt;@Getterpublic&lt;/span&gt; 
+&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AppConfiguration&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Configuration&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Application&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Create an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;App.java&lt;/code&gt; class and add this base application to setup a running dropwizard application:&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;com.opefago.di&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;com.opefago.di.config.AppConfiguration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;io.dropwizard.Application&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;io.dropwizard.setup.Environment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;App&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Application&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;AppConfiguration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 	
+  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;App&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;  
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;AppConfiguration&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;configuration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Environment&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Running the Application&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Before we can run the application, we have to setup the gradle file to have the right plugins for bootstrapping a dropwizard project, this applies if you are using gradle, of you are using maven, the setup is slightly different, you can refer to the tutorial &lt;a href=&quot;https://www.baeldung.com/java-dropwizard&quot;&gt;here&lt;/a&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-groovy highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.time.ZoneId&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.time.ZonedDateTime&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.time.format.DateTimeFormatter&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.time.ZoneId&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.time.ZonedDateTime&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.time.format.DateTimeFormatter&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;plugins&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+  &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;java&apos;&lt;/span&gt;  
+  &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;com.github.johnrengelman.shadow&apos;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;version&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;5.2.0&apos;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;group&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;com.opefago.di&apos;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;version&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;1.0&apos;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;apply&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;plugin:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;java&apos;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;apply&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;plugin:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;application&apos;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;mainClassName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;com.opefago.di.App&apos;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;sourceCompatibility&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;1.8&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;targetCompatibility&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;1.8&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;repositories&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+  &lt;span class=&quot;n&quot;&gt;mavenCentral&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;versions&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;    
+  &lt;span class=&quot;n&quot;&gt;dropwizard&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;1.3.14&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;nl&quot;&gt;guice:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;5.2.0&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;nl&quot;&gt;lombok:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;1.18.16&quot;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;dependencies&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+  &lt;span class=&quot;n&quot;&gt;testCompile&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;group:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;junit&apos;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;name:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;junit&apos;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;version:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;4.12&apos;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;implementation&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;ru.vyarus:dropwizard-guicey:$versions.guice&quot;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;implementation&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;org.redisson:redisson:3.14.0&quot;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;compileOnly&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;org.projectlombok:lombok:$versions.lombok&quot;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;annotationProcessor&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;org.projectlombok:lombok:$versions.lombok&quot;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;testCompileOnly&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;org.projectlombok:lombok:$versions.lombok&quot;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;testAnnotationProcessor&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;org.projectlombok:lombok:$versions.lombok&quot;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;implementation&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;io.dropwizard:dropwizard-core:$versions.dropwizard&quot;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;shadowJar&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+  &lt;span class=&quot;n&quot;&gt;mergeServiceFiles&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;  
+  &lt;span class=&quot;n&quot;&gt;exclude&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;META-INF/*.DSA&apos;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;META-INF/*.RSA&apos;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;META-INF/*.SF&apos;&lt;/span&gt;  
+  &lt;span class=&quot;n&quot;&gt;manifest&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;    
+    &lt;span class=&quot;n&quot;&gt;attributes&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;Implementation-Title&apos;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rootProject&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;    
+    &lt;span class=&quot;n&quot;&gt;attributes&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;Implementation-Version&apos;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rootProject&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;version&lt;/span&gt;    
+    &lt;span class=&quot;n&quot;&gt;attributes&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;Implementation-Vendor-Id&apos;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rootProject&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;group&lt;/span&gt;    
+    &lt;span class=&quot;n&quot;&gt;attributes&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;Build-Time&apos;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ZonedDateTime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ZoneId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;of&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;UTC&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DateTimeFormatter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ISO_ZONED_DATE_TIME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*)&lt;/span&gt;    
+    &lt;span class=&quot;n&quot;&gt;attributes&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;Built-By&apos;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;InetAddress&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;localHost&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;hostName&lt;/span&gt;    
+    &lt;span class=&quot;n&quot;&gt;attributes&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;Created-By&apos;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;Gradle &apos;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gradle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;gradleVersion&lt;/span&gt;    
+    &lt;span class=&quot;n&quot;&gt;attributes&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;Main-Class&apos;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;com.opefago.di.App&quot;&lt;/span&gt;  
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;With this, we should have a minimal running dropwizard app that can run on port 9000, let’s take it for a spin before we progress, run the following command on the terminal&lt;/p&gt;
+
+&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; ./gradlew build
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This should generate a jar file that is post fixed what ‘-all’ in the build/libs folder. Now run the app with the following command:&lt;/p&gt;
+
+&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;java &lt;span class=&quot;nt&quot;&gt;-jar&lt;/span&gt; build/libs/dropwizard-guice-di-1.0-all.jar server app.yml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;If all things go well, you should have a running application that does nothing interesting yet. Now Let’s integrate google guice into it and afterwards set up a service and a resource to see the fill power of google guice in display, we will conclude by also adding healthcheck as well.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Adding Google Guice&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;In the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;App.java&lt;/code&gt; class, add the the initialise method as shown below:&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Bootstrap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;AppConfiguration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bootstrap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;bootstrap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;addBundle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;nc&quot;&gt;GuiceBundle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;builder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;enableAutoConfig&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getPackage&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This is going to add a dropwizard bundle that scans your project path for all Managed, healthcheck, etc as well as their dependencies, as soon as this is done, all you need is to write your code and it automatically picks them, this makes your project simple enough and leave your main class decluttered from too many boilerplate.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Services&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;This is practically all you need to do to get set up with guice on dropwizard, but in other to get a feel of the power that guice brings into dropwizard, let’s proceed to create a service that communicates with redis. Create a class called &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RedisService&lt;/code&gt;, I prefer my services to be implementation of Managed interface provided by dropwizard, so that they can be plugged into the dropwizard lifecycle, you can used the start and stop method to ensure that dependencies are properly managed by the dropwizard lifecycle and more importantly, so that they can be automatically scanned and picked up by Guicey without any extra work.Our code should be looking like so:&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;com.opefago.di.services&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;io.dropwizard.lifecycle.Managed&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;javax.inject.Singleton&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;nd&quot;&gt;@Singleton&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RedisService&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Managed&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;  
+  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;  
+  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;stop&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;As I mentioned earlier, I’ll be using redisson client for connecting to redis. There are other redis clients available out there, I just like that redission provides all types of queue types out of the box. Before we get started, add the following configuration to app.yaml file&lt;/p&gt;
+
+&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;na&quot;&gt;redis&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; 
+&lt;span class=&quot;err&quot;&gt;	&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;uri&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;${REDIS_URI:-localhost}&lt;/span&gt; 
+&lt;span class=&quot;na&quot;&gt;	port&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;${REDIS_PORT:-6379}&lt;/span&gt; 
+&lt;span class=&quot;na&quot;&gt;	idleConnectionTimeout&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;10000&lt;/span&gt; 
+&lt;span class=&quot;na&quot;&gt;	connectTimeout&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;10000&lt;/span&gt; 
+&lt;span class=&quot;na&quot;&gt;	timeout&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;3000&lt;/span&gt; 
+&lt;span class=&quot;na&quot;&gt;	retryAttempts&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;3&lt;/span&gt; 
+&lt;span class=&quot;na&quot;&gt;	retryInterval&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1500&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Notice how the uri and port fields are specified, this indicates that they need to be substituted by environment variables with defaults if the environment variables are not found. Environment variable swapping does not come out of the box in dropwizard, if you run this, the variables will be presented as specified, you have to make dropwizard aware of this behavior. To do that, add the following code to the initialize method of our main class:&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;bootstrap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setConfigurationSourceProvider&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;    
+  &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SubstitutingSourceProvider&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bootstrap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getConfigurationSourceProvider&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(),&lt;/span&gt;        
+                                 &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;EnvironmentVariableSubstitutor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;    
+                                &lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Next, You have to create a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RedisConfiguration&lt;/code&gt; class that maps the files in the app.yml to class parameters and methods, create a class like so:&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;com.fasterxml.jackson.annotation.JsonProperty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;lombok.Getter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;javax.validation.constraints.NotNull&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;nd&quot;&gt;@NotNull&lt;/span&gt;
+&lt;span class=&quot;nd&quot;&gt;@Getter&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RedisConfiguration&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+  &lt;span class=&quot;nd&quot;&gt;@JsonProperty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;uri&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;uri&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; 
+  &lt;span class=&quot;nd&quot;&gt;@JsonProperty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;port&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;port&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;   
+  &lt;span class=&quot;nd&quot;&gt;@JsonProperty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;idleConnectionTimeout&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;idleConnectionTimeout&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;nd&quot;&gt;@JsonProperty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;connectTimeout&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;connectTimeout&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;  
+  &lt;span class=&quot;nd&quot;&gt;@JsonProperty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;timeout&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;timeout&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;  
+  &lt;span class=&quot;nd&quot;&gt;@JsonProperty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;retryAttempts&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;retryAttempts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;  
+  &lt;span class=&quot;nd&quot;&gt;@JsonProperty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;retryInterval&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;retryInterval&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;And then update your AppConfiguration class like so:&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AppConfiguration&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Configuration&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+  &lt;span class=&quot;nd&quot;&gt;@JsonProperty&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;redis&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RedisConfiguration&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;redisConfiguration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now that we have to make this configuration available to the Redis Service, this will be used to start up and setup the redisson client, to do that, first create a field in RedisService so:&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RedisConfiguration&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;redisConfiguration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;You should create a construction that helps to initialise this field as well with an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@Inject&lt;/code&gt; annotation, like so:&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nd&quot;&gt;@Inject&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;RedisService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RedisConfiguration&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;redisConfiguration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;){&lt;/span&gt;  
+  &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;redisConfiguration&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;redisConfiguration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@inject&lt;/code&gt; annotation notifies Guice to inject the dependency automatically for us. If you are familiar with Spring boot, this is analogous to using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@Autowired&lt;/code&gt; annotation. Now build and run:&lt;/p&gt;
+
+&lt;p&gt;It should throw and error while trying to run, Nothing to worry about, google guice inject dependencies by specifying how you want to bind them, guicey does this autobinding by scanning your project path for Managed classes, Resources that have &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@Path&lt;/code&gt; annotations, HealthChecks, Filters annotated with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@WebFilter&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@WebListener&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@WebServlet&lt;/code&gt; etc. But for other classes, you have to inform guicey how you want the binding to happen. In other to do that, create a class subclass of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;AbstractModule&lt;/code&gt;, and teach Guice how to create your unmanaged dependency as shown below:&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;com.opefago.di.config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;com.google.inject.AbstractModule&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;com.google.inject.Provides&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ConfigModule&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AbstractModule&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+  &lt;span class=&quot;nd&quot;&gt;@Provides&lt;/span&gt;  
+  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RedisConfiguration&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getRedisConfiguration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;AppConfiguration&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;configuration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;){&lt;/span&gt;    
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;configuration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getRedisConfiguration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;  
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;  &lt;span class=&quot;kd&quot;&gt;protected&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;configure&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;    
+    &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;configure&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;  
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The next step will be to register this Module Class so that Guice is aware of it, modify your initialise method in the main class to like like so:&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Bootstrap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;AppConfiguration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bootstrap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;bootstrap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setConfigurationSourceProvider&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;      
+    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SubstitutingSourceProvider&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bootstrap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getConfigurationSourceProvider&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(),&lt;/span&gt;          
+                                   &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;EnvironmentVariableSubstitutor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)));&lt;/span&gt;
+  
+  &lt;span class=&quot;n&quot;&gt;bootstrap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;addBundle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;nc&quot;&gt;GuiceBundle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;builder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;enableAutoConfig&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getPackage&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;modules&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ConfigModule&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now build and run the project again, and everything should work out of the box.
+With this, we have google guice properly set up and hopefully, understand the basics and can work around almost any challenge. I won’t go into the project details, to see the project in its entirety, visit the repository &lt;a href=&quot;https://github.com/opefago/dropwizard-guice-di&quot;&gt;here&lt;/a&gt;. Hope this material has been of help.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Conclusion&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Google guice is a very powerful tool for Dependency Injection as well as for Speeding up development, we have only scratched the surface here, Dropwizard though lightweight is also a very good framework for API development projects, with google guice, tons of boilerplate can be avoided.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;References&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Design Patterns Explained – Dependency Injection with Code Examples* (2018). Available at: https://stackify.com/dependency-injection/ (Accessed: 9 December 2020).&lt;/li&gt;
+  &lt;li&gt;Guide to Google Guice  Baeldung (2020). Available at: https://www.baeldung.com/guice (Accessed: 22 December 2020).&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        <pubDate>Tue, 22 Dec 2020 07:18:33 -0800</pubDate>
+        <link>https://opefago.com/2020/Dependency-Injection-with-Google-Guice-and-Dropwizard/</link>
+        <guid isPermaLink="true">https://opefago.com/2020/Dependency-Injection-with-Google-Guice-and-Dropwizard/</guid>
+        
+        <category>dropwizard</category>
+        
+        <category>dependency Injection</category>
+        
+        <category>guice</category>
+        
+        <category>guicey</category>
+        
+        
+      </item>
     
       <item>
         <title>Is religious intolerance an Abrahamic construct? </title>
-        <description>&lt;p&gt;&lt;img src=&quot;/images/europeana-0GuL_hVwQHA-unsplash.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+        <description>&lt;p&gt;&lt;img src=&quot;/images/birmingham-museums-trust-5EUh-tq31eA-unsplash.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Photo by &lt;a href=&quot;https://unsplash.com/@birminghammuseumstrust?utm_source=unsplash&amp;amp;utm_medium=referral&amp;amp;utm_content=creditCopyText&quot;&gt;Birmingham Museums Trust&lt;/a&gt; on &lt;a href=&quot;https://unsplash.com/?utm_source=unsplash&amp;amp;utm_medium=referral&amp;amp;utm_content=creditCopyText&quot;&gt;Unsplash&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;In 550 B.C., Cyrus, king of Anshan, founded the Achaemenid Empire, he reigned from 550 B.C to 530 B.C. The Achaemenid Empire was the largest empire by the percentage of the world’s population in history. About 44% of the world’s population lived under its rule. It was also the most diverse and pluralistic empire in the world at the time, unifying different nations, tribes, languages, cultures and religions. Tolerance of varying beliefs was one of its most defining characteristics.&lt;/p&gt;
 
-&lt;p&gt;At the height of the Roman empire, it had a conquered so many civilisations, in order to be able to control that vast empire, it needed complete cooperation from its conquered nations, it usually treated them as allies and encouraged them to participate in the glory and wealth of its empire. To all its subjects, Rome granted religious toleration with one condition attached, they must also recognize the roman deities, herein is where they had problems with the Jews, the Jews would not accept any deity outside of Yahweh. Notwithstanding, Judaism still had the status of a legal religion in the Roman Empire with formal protections. Like the Romans, almost all the conquered empires were polytheistic. Since they believed other people had their own gods, they found it relatively easy to take part in festivals celebrating Roman gods. It was simply a matter of paying respect to the Romans.&lt;/p&gt;
+&lt;p&gt;At the height of the Roman empire, it had conquered so many civilisations, in order to be able to control that vast empire, it needed complete cooperation from its conquered nations, it usually treated them as allies and encouraged them to participate in the glory and wealth of its empire. To all its subjects, Rome granted religious toleration with one condition attached, they must also recognize the roman deities, herein is where they had problems with the Jews, the Jews would not accept any deity outside of Yahweh. Notwithstanding, Judaism still had the status of a legal religion in the Roman Empire with formal protections. Like the Romans, almost all the conquered empires were polytheistic. Since they believed other people had their own gods, they found it relatively easy to take part in festivals celebrating Roman gods. It was simply a matter of paying respect to the Romans.&lt;/p&gt;
 
 &lt;p&gt;In the 13th century, Genghis Khan consolidated the small nomadic Asian tribes into the Mongol empire and embarked on one of the greatest conquests, turning Mongolia into the largest contiguous empire in history after his death. He launched the Mongol Invasion and captured almost all of Eurasia. The Mongols were highly tolerant of most religions during the early Mongol Empire. Under his administration, all religious leaders were exempted from taxation, and from public service. Mongol emperors were known for organizing competitions of religious debates among clerics, and these would draw large audiences.&lt;/p&gt;
 
@@ -52,12 +370,12 @@
   &lt;li&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Salem_witch_trials&quot;&gt;https://en.wikipedia.org/wiki/Salem_witch_trials&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;Albert, C.G &amp;amp; Riemer, R 2014, Violence in Ancient Christianity: Victims and Perpetrators, Brill Academic Publishers, The Netherlands.&lt;/li&gt;
   &lt;li&gt;&lt;em&gt;China’s Repression of Uighurs in Xinjiang&lt;/em&gt; (2020). Available at: &lt;a href=&quot;https://www.cfr.org/backgrounder/chinas-repression-uighurs-xinjiang&quot;&gt;https://www.cfr.org/backgrounder/chinas-repression-uighurs-xinjiang&lt;/a&gt; (Accessed: 11 August 2020).&lt;/li&gt;
-  &lt;li&gt;&lt;em&gt;Four Buddhist Persecutions in China&lt;/em&gt; (2020). Available at: &lt;a href=&quot;https://en.wikipedia.org/wiki/Four_Buddhist_Persecutions_in_China#:~:text=The%20Old%20History%20of%20the,of%20China's%206%2C030%20Buddhist%20temples.&quot;&gt;https://en.wikipedia.org/wiki/Four_Buddhist_Persecutions_in_China#:~:text=The%20Old%20History%20of%20the,of%20China’s%206%2C030%20Buddhist%20temples&lt;/a&gt;. (Accessed: 11 August 2020).&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;Four Buddhist Persecutions in China&lt;/em&gt; (2020). Available at: &lt;a href=&quot;https://en.wikipedia.org/wiki/Four_Buddhist_Persecutions_in_China#:~:text=The%20Old%20History%20of%20the,of%20China&apos;s%206%2C030%20Buddhist%20temples.&quot;&gt;https://en.wikipedia.org/wiki/Four_Buddhist_Persecutions_in_China#:~:text=The%20Old%20History%20of%20the,of%20China’s%206%2C030%20Buddhist%20temples&lt;/a&gt;. (Accessed: 11 August 2020).&lt;/li&gt;
 &lt;/ol&gt;
 </description>
-        <pubDate>Tue, 11 Aug 2020 23:29:52 +0300</pubDate>
-        <link>http://localhost:4000/2020/Is-religious-intolerance-an-Abrahamic-construct/</link>
-        <guid isPermaLink="true">http://localhost:4000/2020/Is-religious-intolerance-an-Abrahamic-construct/</guid>
+        <pubDate>Tue, 11 Aug 2020 23:29:52 -0700</pubDate>
+        <link>https://opefago.com/2020/Is-religious-intolerance-an-Abrahamic-construct/</link>
+        <guid isPermaLink="true">https://opefago.com/2020/Is-religious-intolerance-an-Abrahamic-construct/</guid>
         
         <category>opinion</category>
         
@@ -113,9 +431,9 @@
 &lt;/ol&gt;
 
 </description>
-        <pubDate>Thu, 30 Jul 2020 08:29:52 +0300</pubDate>
-        <link>http://localhost:4000/2020/Storytelling-leveraging-on-one-of-humans-basic-emotional-trigger/</link>
-        <guid isPermaLink="true">http://localhost:4000/2020/Storytelling-leveraging-on-one-of-humans-basic-emotional-trigger/</guid>
+        <pubDate>Thu, 30 Jul 2020 08:29:52 -0700</pubDate>
+        <link>https://opefago.com/2020/Storytelling-leveraging-on-one-of-humans-basic-emotional-trigger/</link>
+        <guid isPermaLink="true">https://opefago.com/2020/Storytelling-leveraging-on-one-of-humans-basic-emotional-trigger/</guid>
         
         <category>opinion</category>
         
@@ -141,9 +459,9 @@
 &lt;p&gt;&lt;strong&gt;&lt;em&gt;:::Update:::&lt;/em&gt;&lt;/strong&gt; After some tweaking, i finally figured how to add comments and creating extensions using &lt;a href=&quot;https://disqus.com/&quot;&gt;disqus&lt;/a&gt; plugin, I didn’t mention that this blog is set up using &lt;a href=&quot;https://jekyllrb.com/&quot;&gt;jekyll&lt;/a&gt;, which is an awesome blogging framework for those who love to tinker&lt;/p&gt;
 
 </description>
-        <pubDate>Tue, 21 Jan 2020 15:29:52 +0200</pubDate>
-        <link>http://localhost:4000/2020/Hi-I-am-Ope/</link>
-        <guid isPermaLink="true">http://localhost:4000/2020/Hi-I-am-Ope/</guid>
+        <pubDate>Tue, 21 Jan 2020 15:29:52 -0800</pubDate>
+        <link>https://opefago.com/2020/Hi-I-am-Ope/</link>
+        <guid isPermaLink="true">https://opefago.com/2020/Hi-I-am-Ope/</guid>
         
         <category>about</category>
         
